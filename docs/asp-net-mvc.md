@@ -46,13 +46,13 @@ There are many ways to create new projects, the most common for most people is t
 
 Your directory structure should now be:
 
-![dotnet-new](./images/dotnet-new.png)
+![dotnet-new](../images/dotnet-new.png)
 
 Congratulations, you now have a .Net Core website. Open either the `Program.cs` or `Startup.cs` files. If the *OmniSharp* extension isn't installed in your VS Code already, you'll be prompted at this stage to install the C# extension and then reload VS Code.
 
 If / once *Omnisharp* is installed, when you open one of the `*.cs` files you may be prompted to restore dependencies. Simply accept the prompts, which should leave you with a built application (`bin` and `obj` directories will be added automatically):
 
-![dotnet-build](./images/dotnet-build.png)
+![dotnet-build](../images/dotnet-build.png)
 
 You can now press `F5` *(`Debug: Start Debugging`)* to run your web site and launch a browser tab which should load the default *"Hello World" Middleware* created when you ran `dotnet new`.
 
@@ -74,7 +74,7 @@ You can now press `F5` *(`Debug: Start Debugging`)* to run your web site and lau
 
 The first step in extending our application is adding a test project. Follow the steps above and run `dotnet new xunit` in the `./tests/TodoApplication.Tests/` directory (which you'll need to create).
 
-![dotnet xunit](./images/dotnet-xunit.png)
+![dotnet xunit](../images/dotnet-xunit.png)
 
 The test project needs to reference our web application, so in the terminal, run the following command from the `TodoApplication.Tests` directory:
 
@@ -216,7 +216,7 @@ Finally, run the test by running the command `dotnet test` in the terminal, from
 >using Xunit;
 >```
 
-![dotnet test](./images/dotnet-test.png)
+![dotnet test](../images/dotnet-test.png)
 
 Unfortunately, this does not mean that our API is accessible yet. Indeed, if you press `F5` *(`Debug: Start Debugging`)* and navigate to `http://localhost:5000/todo/getall` you'll find your application errors. To resolve this we'll introduce integration tests.
 
