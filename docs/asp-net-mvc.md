@@ -46,13 +46,13 @@ There are many ways to create new projects, the most common for most people is t
 
 Your directory structure should now be:
 
-![dotnet-new](./images/dotnet-new.png)
+![dotnet-new](../images/dotnet-new.png)
 
 Congratulations, you now have a .Net Core website. Open either the `Program.cs` or `Startup.cs` files. If the *OmniSharp* extension isn't installed in your VS Code already, you'll be prompted at this stage to install the C# extension and then reload VS Code.
 
 If / once *Omnisharp* is installed, when you open one of the `*.cs` files you may be prompted to restore dependencies. Simply accept the prompts, which should leave you with a built application (`bin` and `obj` directories will be added automatically):
 
-![dotnet-build](./images/dotnet-build.png)
+![dotnet-build](../images/dotnet-build.png)
 
 You can now press `F5` *(`Debug: Start Debugging`)* to run your web site and launch a browser tab which should load the default *"Hello World" Middleware* created when you ran `dotnet new`.
 
@@ -74,7 +74,7 @@ You can now press `F5` *(`Debug: Start Debugging`)* to run your web site and lau
 
 The first step in extending our application is adding a test project. Follow the steps above and run `dotnet new xunit` in the `./tests/TodoApplication.Tests/` directory (which you'll need to create).
 
-![dotnet xunit](./images/dotnet-xunit.png)
+![dotnet xunit](../images/dotnet-xunit.png)
 
 The test project needs to reference our web application, so in the terminal, run the following command from the `TodoApplication.Tests` directory:
 
@@ -186,6 +186,7 @@ To resolve the `TodoRepository` error:
 
  * Add a `TodoRepository.cs` file to the `TodoApplication`.
  * Add the following content to the `TodoRepository` file:
+    * Note: We've added methods you don't require until later in this lab for simplicity.
 
 ```csharp
 using System.Collections.Generic;
@@ -195,7 +196,26 @@ namespace TodoApplication
 {
 	public interface TodoRepository
 	{
-		Task<IEnumerable<Todo>> GetAllAsync();
+		/// <summary>
+		/// Return all <see cref="Todo"/>s, including those completed.
+		/// </summary>
+		/// <returns>Returns empty collection if none present</returns>
+		Task<ICollection<Todo>> GetAllAsync();
+		/// <summary>
+		/// Fetch the <see cref="Todo"/> matching the specified <paramref name="id"/>
+		/// </summary>
+		/// <returns>null if matching <see cref="Todo"/> not found.</returns>
+		Task<Todo> GetSingleAsync(int id);
+		/// <summary>
+		/// Adds the Todo
+		/// </summary>
+		/// <returns>ID of the created <see cref="Todo"/></returns>
+		Task<int> AddAsync(Todo todo);
+		/// <summary>
+		/// Replaces the <see cref="Todo"/> with a matching <paramref name="id">
+		/// </summary>
+		/// <returns>false if unable to update</returns>
+		Task<bool> UpdateAsync(int id, Todo todo);
 	}
 }
 ```
@@ -216,7 +236,7 @@ Finally, run the test by running the command `dotnet test` in the terminal, from
 >using Xunit;
 >```
 
-![dotnet test](./images/dotnet-test.png)
+![dotnet test](../images/dotnet-test.png)
 
 Unfortunately, this does not mean that our API is accessible yet. Indeed, if you press `F5` *(`Debug: Start Debugging`)* and navigate to `http://localhost:5000/todo/getall` you'll find your application errors. To resolve this we'll introduce integration tests.
 
@@ -297,27 +317,54 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace TodoApplication
 {
 	internal sealed class InMemoryTodoRepository : TodoRepository
 	{
-		private readonly ConcurrentBag<Todo> _todos;
+		private readonly ConcurrentDictionary<int, Todo> _todos;
+
+		private static readonly IEnumerable<Todo> Seed = new[] {
+			new Todo { Text = "Setup Projects", IsComplete = true },
+			new Todo { Text = "Unit Test Todo Controller", IsComplete = true},
+			new Todo { Text = "Integration Test Todo Controller"},
+			new Todo { Text = "Correct Todo Controller Routing"},
+			new Todo { Text = "Add 'Get Single' API"},
+			new Todo { Text = "Add 'New Todo' API" },
+			new Todo { Text = "Add 'Complete Todo' API" }
+		};
+		private int _nextId;
 
 		public InMemoryTodoRepository()
+			=> _todos = new ConcurrentDictionary<int, Todo>(Seed
+				.ToDictionary(x => Interlocked.Increment(ref _nextId), x => x));
+
+		public Task<ICollection<Todo>> GetAllAsync()
+			=> Task.FromResult(_todos.Values);
+
+		public Task<Todo> GetSingleAsync(int id)
 		{
-			_todos = new ConcurrentBag<Todo>();
-			_todos.Add(new Todo { Text = "Setup Projects", IsComplete = true });
-			_todos.Add(new Todo { Text = "Unit Test Todo Controller", IsComplete = true});
-			_todos.Add(new Todo { Text = "Integration Test Todo Controller"});
-			_todos.Add(new Todo { Text = "Correct Todo Controller Routing"});
-			_todos.Add(new Todo { Text = "Add 'New Todo' API" });
-			_todos.Add(new Todo { Text = "Add 'Complete Todo' API" });
+			if (_todos.TryGetValue(id, out var todo))
+				return Task.FromResult(todo);
+			return Task.FromResult<Todo>(null);
+		} 
+
+		public Task<int> AddAsync(Todo todo)
+		{
+			var id = Interlocked.Increment(ref _nextId);
+			if (_todos.TryAdd(id, todo))
+				return Task.FromResult(id);
+			throw new NotImplementedException("Erm... that's weird.");
 		}
 
-		public Task<IEnumerable<Todo>> GetAllAsync()
-			=> Task.FromResult(_todos.AsEnumerable());
+		public Task<bool> UpdateAsync(int id, Todo todo)
+		{
+			if (_todos.TryGetValue(id, out var original))
+				return Task.FromResult(_todos.TryUpdate(id, original, todo));
+			return Task.FromResult(false);
+		}
 	}
 }
 ```
@@ -457,14 +504,22 @@ Congratulations, you have a working RESTful API!
 
 To complete this lab, I leave it to you to implement the following features (these will be necessary for future labs, so don't skip them!):
 
- * Using Unit Tests (TDD), update the `TodoController` to have a new method, `Create()`, that calls a new `AddAsync()` method on the `TodoRepository`.
-   * Hint: `HttpPostAttribute`
- * Add an integration test for your new `Create` method, and update the `InMemoryTodoRepository` accordingly.
-   * Hint: 
+ 1. Using Unit Tests (TDD), update the `TodoController` to have a new method, `GetSingle(int id)`, that calls the `GetSingleAsync(id)` method on the `TodoRepository`
+ 1. Add an integration test for your new `GetSingle` method.
+ 1. Using Unit Tests (TDD), update the `TodoController` to have a new method, `Create()`, that calls the `AddAsync()` method on the `TodoRepository`.
+    * Note: RESTful best practices state that we should return a HTTP 201 containing the new resources location.
+    * Hints: `HttpPostAttribute` & `CreatedResult`
+	* Note: Whilst implementing this myself, I [raised a bug](https://github.com/aspnet/Mvc/issues/6284) which may determine the method you use.
+ 1. Add an integration test for your new `Create` method.
+    * Hint: 
+	
+    ```csharp
+    var postContent = new StringContent("{\"text\":\"Add 'Complete Todo' API\",\"isComplete\":true}");
+    var response = await client.PostAsync("/todos/1", postContent);
+    ```
 
-   ```csharp
-   var postContent = new StringContent("{\"text\":\"Add 'Complete Todo' API\",\"isComplete\":true}");
-   var response = await client.PostAsync("/todos/1", postContent);
-   ```
-
- * Using TDD, update the `TodoController` to have a new `Update` method implementing `HTTP PUT` requests.
+    * Note: You should be able to call your `GetSingle` method using the information provided in the `Location` header of your `Create` response.
+ 5. Using TDD, update the `TodoController` to have a new `Update` method implementing `HTTP PUT` requests.
+ 1. Add integration tests for your `Update` method.
+    * Note: On Success, try returning a HTTP 200 containing the updated resources location.
+	* Note: On Failure, try returning a HTTP 409
