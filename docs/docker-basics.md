@@ -224,6 +224,8 @@ Run the following command to build and name your image:
 docker image build -t <name> <location of DockerFile>`
 ```
 
+> _**Troubleshooting**: If the build fails at Step 3 because it cannot find the `netcoreapp1.1/publish` directory, run `dotnet publish` from the `TodoApplication` directory to output the publish content docker is expecting._
+
 The first time you do this it will download all the layers that make up that `aspnetcore` image. It will then carry out each step within the Dockerfile, e.g. Copy files.
 
 You can now `run` this image. Don't forget to use the `-p` parameter to bind the ports.
