@@ -150,7 +150,7 @@ Search for `microsoft/aspnetcore` in the [docker hub](https://hub.docker.com/r/m
 
 We want to use the current `latest` tag (which should be the latest stable release), but we'll refer to the `1.1.2` tag for stability. In the above example, we can see there are actually two images using the `1.1.2` prefix. This usually indicates a difference in base image; remember we are running Linux containers so we want to find the Linux image (not Windows).
 
-Let's click on the first 1.1.2 [(DockerFile) link](https://github.com/aspnet/aspnet-docker/blob/master/1.1/nanoserver/runtime/Dockerfile) ![1.1.2](../images/1.1.2-top.png) to see how the image was made.
+Let's click on the first 1.1.2 [(DockerFile) link](https://github.com/aspnet/aspnet-docker/blob/master/1.1/nanoserver/runtime/Dockerfile) ![1.1.2](../images/1.1.2-top.PNG) to see how the image was made.
 
 ![nanoserver-baselayer](../images/windows-dockerfile.png)
 
