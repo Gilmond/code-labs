@@ -94,7 +94,7 @@ docker container run -d -p 8080:80 tutum/hello-world
 
 Now go to [localhost:8080](http://localhost:8080) to see the following page:
 
-![localhost:8080](../images/local-host8080.PNG)
+![localhost:8080](../images/local-host8080.png)
 
 The hostname displayed in the page is the container ID.
 
@@ -140,7 +140,7 @@ Search for `microsoft/aspnetcore` in the [docker hub](https://hub.docker.com/r/m
 
 >_**Note**: When you search for `aspnetcore` on docker hub, you'll find many results. Most of these are slight modifications of the original image tailored by individuals. In this case, we want the `microsoft/aspnetcore` image which is clearly the official author._ 
 
-![micrsoft-aspnetcore](../images/micrsoft-aspnetcore.PNG)
+![micrsoft-aspnetcore](../images/micrsoft-aspnetcore.png)
 
 > _**Note**: In the image above, there are multiple *tags* for several of the images. The image at the top is tagged with `'1.0.5'`, `'1.0'`, and `'lts'` (which stands for 'long-term stability'). It is important to note that **tags are not permanent**. If Microsoft were to release a `1.0.6` version of the image, they would move the `1.0` and possibly the `lts` tag to the new image. This is considered a best practice for docker images, and allows consumers to determine for themselves which release branch(es) they want to build on top of._ 
 >
@@ -150,7 +150,7 @@ Search for `microsoft/aspnetcore` in the [docker hub](https://hub.docker.com/r/m
 
 We want to use the current `latest` tag (which should be the latest stable release), but we'll refer to the `1.1.2` tag for stability. In the above example, we can see there are actually two images using the `1.1.2` prefix. This usually indicates a difference in base image; remember we are running Linux containers so we want to find the Linux image (not Windows).
 
-Let's click on the first 1.1.2 [(DockerFile) link](https://github.com/aspnet/aspnet-docker/blob/master/1.1/nanoserver/runtime/Dockerfile) ![1.1.2](../images/1.1.2-top.PNG) to see how the image was made.
+Let's click on the first 1.1.2 [(DockerFile) link](https://github.com/aspnet/aspnet-docker/blob/master/1.1/nanoserver/runtime/Dockerfile) ![1.1.2](../images/1.1.2-top.png) to see how the image was made.
 
 ![nanoserver-baselayer](../images/windows-dockerfile.png)
 
