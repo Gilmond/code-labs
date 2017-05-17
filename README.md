@@ -5,6 +5,7 @@ This repository contains code labs (or *katas*) that we have run internally. We 
 ## Labs
 
  * [ASP.Net Core MVC REST API](./docs/asp-net-mvc.md)
+ * [Docker Basics](./docs/docker-basics.md)
 
 ## Contributions
 
