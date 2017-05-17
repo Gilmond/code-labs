@@ -1,6 +1,6 @@
 # Gilmond Consulting Code Labs
 
-This repository contains code labs (or *katas*) that we have run internally. We hope that they provide a usefulo resource to others as they have done for us.
+This repository contains code labs (or *katas*) that we have run internally. We hope that they provide a useful resource to others as they have done for us.
 
 ## Labs
 

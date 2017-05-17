@@ -504,6 +504,7 @@ Congratulations, you have a working RESTful API!
 
 To complete this lab, I leave it to you to implement the following features (these will be necessary for future labs, so don't skip them!):
 
+<<<<<<< HEAD
  1. Using Unit Tests (TDD), update the `TodoController` to have a new method, `GetSingle(int id)`, that calls the `GetSingleAsync(id)` method on the `TodoRepository`
  1. Add an integration test for your new `GetSingle` method.
  1. Using Unit Tests (TDD), update the `TodoController` to have a new method, `Create()`, that calls the `AddAsync()` method on the `TodoRepository`.
@@ -523,3 +524,16 @@ To complete this lab, I leave it to you to implement the following features (the
  1. Add integration tests for your `Update` method.
     * Note: On Success, try returning a HTTP 200 containing the updated resources location.
 	* Note: On Failure, try returning a HTTP 409
+=======
+ * Using Unit Tests (TDD), update the `TodoController` to have a new method, `Create()`, that calls a new `AddAsync()` method on the `TodoRepository`.
+   * Hint: `HttpPostAttribute`
+ * Add an integration test for your new `Create` method, and update the `InMemoryTodoRepository` accordingly.
+   * Hint: 
+
+   ```csharp
+   var postContent = new StringContent("{\"text\":\"Add 'Complete Todo' API\",\"isComplete\":true}");
+   var response = await client.PostAsync("/todos/1", postContent);
+   ```
+
+ * Using TDD, update the `TodoController` to have a new `Update` method implementing `HTTP PUT` requests.
+>>>>>>> eae568e87bb8743695f6cd3fcf94522e0a9aa6ca
