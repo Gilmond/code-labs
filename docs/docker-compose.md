@@ -153,7 +153,7 @@ There are several moving parts here so I'll step through the important directive
 Next, add a new `Dockerfile` to the `TodoApplication.Proxy` directory with the following contents:
 
 ```docker
-FROM nginx:1.13.1-alpine
+FROM nginx:1.13.1
 COPY nginx.conf /etc/nginx/nginx.conf
 ```
 
@@ -184,9 +184,9 @@ To diagnose this, examine the logs for the services using the command `docker-co
 
 ![compose logs](../images/compose-nginx-logs.png)
 
-Notice the warnings from `proxy_1` explaining that it is unable to find an upstream server. That's because we declared two upstream servers, but only have 1 API.
+Notice the warnings from `proxy_1` explaining that it is unable to find an upstream server. That's because we declared two upstream servers in `nginx.conf`, but only have 1 API in *Docker Compose*.
 
-In order to remedy this, you will need to ensure *Compose* scales your API to match the number of entries in the `nginx.conf` `upstream` section. In the example above, 2 were declared (`api_1` and `api_2`), so use the command `docker-compose up --scale api=2` which will start two containers for your API.
+In order to remedy this, you will need to ensure *Compose* scales your API to match the number of entries in the `nginx.conf` `upstream` section. In the example above, 2 were declared (`api_1` and `api_2`), so use the command `docker-compose up --scale api=2` which will start two containers for your API (shown here using `docker-compose ps`).
 
 ![compose with NGINX](../images/compose-up-nginx.png)
 
@@ -194,7 +194,17 @@ If you make consecutive requests to your API, you should see that your requests 
 
 ![compose load balancing](../images/compose-load-balance.png)
 
-> _**Note**: As shown in the screenshot, the CURL command shown has been causing an Invalid Model State. If your code checks `ModelState.IsValid()` then you'll either need to disable this check or correct the request syntax to a valid model._
+> _**Note**: As shown in the screenshot, the CURL command shown has been causing an Invalid Model State in the code I've been using. If your code checks `ModelState.IsValid()` then you'll either need to disable this check or correct the request syntax to a valid model._
+
+#### DNS Load Balancing
+
+*DNS Load Balancing* and variants of it work by having the DNS Server return multiple IP Addresses for a given domain. Some implementations of load balancing rely on the DNS rotating the IPs listed and simply take the first of these rotated IPs, whilst others are a little more intelligent. This is important because, as is probably evident from the previous section, you are unable to use `docker-compose scale` unless your proxy configuration matches the number of upstream servers you plan to scale to.
+
+Neither of the popular proxies used with Docker (`NGINX` and `HAProxy`) work with DNS proxying right now.
+
+`NGINX` does have guidance on [using DNS for service discovery](https://www.nginx.com/blog/dns-service-discovery-nginx-plus/), which you should be able to use with the free load balancing. However, only the commercial `NGINX Plus` product official [supports DNS Load Balancing](https://www.nginx.com/resources/admin-guide/load-balancer/#resolve).
+
+`HAProxy` doesn't currently support DNS Load Balancing, but we hope to see it in v1.8.
 
 ### X-Forwarded-*
 
@@ -204,7 +214,7 @@ Depending on your implementation, these URIs will either be relative or absolute
 
 ![Incorrect Location Header](../images/compose-incorrect-location.png)
 
-It may not be immediately obvious in the above screenshot, but note that I sent the request to `localhost:8091` whilst the `location` header specifies `localhost` (without the port). This is because your ASP.Net application believes it is running on port 80, as defined in your application's `Dockerfile` (port 80 is implicit and removed from the URL).
+It may not be immediately obvious in the above screenshot, but note that I sent the request to `localhost:8091` whilst the `location` header specifies `localhost` (without the port). This is because your ASP.Net application is running on port 80, as defined in your application's `Dockerfile` (port 80 is implicit and removed from the URL).
 
 To remedy this, Microsoft provide some middleware that can utilise the `X-Forwarded-*` headers that you configured NGINX to provide.
 
