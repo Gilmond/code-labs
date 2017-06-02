@@ -117,6 +117,7 @@ http {
   upstream api_backends {
     server api_1;
     server api_2;
+    server api_3;
   }
 
   server {
@@ -184,9 +185,9 @@ To diagnose this, examine the logs for the services using the command `docker-co
 
 ![compose logs](../images/compose-nginx-logs.png)
 
-Notice the warnings from `proxy_1` explaining that it is unable to find an upstream server. That's because we declared two upstream servers in `nginx.conf`, but only have 1 API in *Docker Compose*.
+Notice the warnings from `proxy_1` explaining that it is unable to find an upstream server. That's because we declared three upstream servers in `nginx.conf`, but so far have only scaled our API to 2 in *Docker Compose*.
 
-In order to remedy this, you will need to ensure *Compose* scales your API to match the number of entries in the `nginx.conf` `upstream` section. In the example above, 2 were declared (`api_1` and `api_2`), so use the command `docker-compose up --scale api=2` which will start two containers for your API (shown here using `docker-compose ps`).
+In order to remedy this, you will need to ensure *Compose* scales your API to match the number of entries in the `nginx.conf` `upstream` section. In the example above, 3 were declared (`api_1`, `api_2` and `api_3`), so use the command `docker-compose up --scale api=3` which will start three containers for your API (shown here using `docker-compose ps`).
 
 ![compose with NGINX](../images/compose-up-nginx.png)
 
