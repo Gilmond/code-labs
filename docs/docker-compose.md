@@ -189,9 +189,16 @@ Notice the warnings from `proxy_1` explaining that it is unable to find an upstr
 
 In order to remedy this, you will need to ensure *Compose* scales your API to match the number of entries in the `nginx.conf` `upstream` section. In the example above, 3 were declared (`api_1`, `api_2` and `api_3`), so use the command `docker-compose up --scale api=3` which will start three containers for your API (shown here using `docker-compose ps`).
 
+> _**Troubleshooting**: If your *Docker Compose* version (`docker-compose -v`) is less than 1.13, you may find using the `--scale` option is unavailable. You can workaround this by performing the following commands instead:_
+>
+>```cmd
+>docker-compose scale api=3
+>docker-compose up -d --force-recreate
+>```
+
 ![compose with NGINX](../images/compose-up-nginx.png)
 
-If you make consecutive requests to your API, you should see that your requests are being load balanced between the upstream servers:
+If you attach the terminal to your logs using `docker-compose logs -f` and make consecutive requests to your API, you should see that your requests are being load balanced between the upstream servers:
 
 ![compose load balancing](../images/compose-load-balance.png)
 
@@ -206,6 +213,46 @@ Neither of the popular proxies used with Docker (`NGINX` and `HAProxy`) work wit
 `NGINX` does have guidance on [using DNS for service discovery](https://www.nginx.com/blog/dns-service-discovery-nginx-plus/), which you should be able to use with the free load balancing. However, only the commercial `NGINX Plus` product official [supports DNS Load Balancing](https://www.nginx.com/resources/admin-guide/load-balancer/#resolve).
 
 `HAProxy` doesn't currently support DNS Load Balancing, but we hope to see it in v1.8.
+
+### Build Command
+
+In the previous lab, you updated the `tasks.json` command to automatically deploy your application to a single docker container. This can be easily updated to utilise the `docker-compose` commands mentioned above, with the following task:
+
+```json
+{
+    "version": "0.1.0",
+    "command": "dotnet",
+    "isShellCommand": true,
+    "args": [],
+    "tasks": [
+        {
+            "taskName": "build",
+            "command": "powershell",
+            "args": [
+                "dotnet restore src/TodoApplication /ConsoleLoggerParameters:Verbosity=quiet",
+                ";dotnet publish -v m src/TodoApplication",
+                ";docker-compose up -d --build --remove-orphans --no-color --scale api=3"
+            ],
+            "isBuildCommand": true,
+            "problemMatcher": "$msCompile"
+        }
+    ]
+}
+```
+
+In the example above, we've merged the `up` and `build` commands by providing the `--build` option on `docker-compose up`. You should now be able to use `Ctrl + Shift + B` *(`Tasks: Run Build Task`)* to conveniently build your application and deploy it with *Docker Compose*.
+
+>_**Troubleshooting**: As was mentioned previously, if your *Compose* version is lower than 1.13 you won't have access to the `--scale` option. In this case, update your task `args` as follows:_
+>
+>```json
+>"args": [
+>    "dotnet restore src/TodoApplication /ConsoleLoggerParameters:Verbosity=quiet",
+>    ";dotnet publish -v m src/TodoApplication",
+>    ";docker-compose up -d --build --remove-orphans --no-color",
+>    ";docker-compose scale api=3",
+>    ";docker-compose up -d --force-recreate"
+>],
+>```
 
 ### X-Forwarded-*
 
@@ -260,9 +307,46 @@ Now when you create a *Todo*, the `Location` header in the response should be se
 
 Whilst it was relatively simple to scale your application with *Compose*, it has introduced an issue within our application. If you remember, the implementation of `TodoRepository` is in-memory. When you have multiple instances of the API running, your in-memory stores instantly get out of sync. If you create a Todo and then GET the todos a couple of times, you'll see your new Todo is not always present, depending on which instance handled the Create request, and which instance handles your GET requests.
 
-For this reason, we recommend you **always run your applications with multiple instances**, ensuring that your code can be scaled.
+![state de-synced](../images/compose-desynced-state.png)
+
+<div style="display: none">
+title De-synced Persistence
+
+Client->Proxy: POST /todos { Text: Test A }
+Proxy->API 1: POST /todos { Text: Test A }
+note over API 1: Stores Todo in-memory and assigns ID 123
+API 1->Proxy: 201 Created: Location { ID 123 }
+Proxy->Client: 201 Created: Location { ID 123 }
+Client->Proxy: GET /todos/123
+Proxy->API 2: GET /todos/123
+note over API 2:ID 123 has not been created on this instance
+API 2->Proxy: 404 Not Found
+Proxy->Client: 404 Not Found
+</div>
+
+For this reason, we recommend you **always run your applications with multiple instances**, ensuring that your code can be scaled whilst correctly managing state.
 
 To resolve this issue you will need to add a persistence mechanism that can be shared across your API instances. For example, you can utilise the *MongoDB* docker image to provide some shared persistence.
+
+![state synced](../images/compose-synced-state.png)
+
+<div style="display: none">
+title Synced Persistence
+
+Client->Proxy: POST /todos { Text: Test A }
+Proxy->API 1: POST /todos { Text: Test A }
+note over API 1, API 2, Storage: Configured to use shared storage
+API 1->Storage: Store Todo
+Storage->API 1: ID 123
+API 1->Proxy: 201 Created { Location: /todos/123 }
+Proxy->Client: 201 Created { Location: /todos/123 }
+Client->Proxy: GET /todos/123
+Proxy->API 2: GET /todos/123
+API 2->Storage: Get Todo 123
+Storage->API 2: Todo 123
+API 2->Proxy: 200 OK { Todo 123 }
+Proxy->Client: 200 OK { Todo 123 }
+</div>
 
 1. Add the `MongoDB.Driver` NuGet Package to your `TodoApplication`.
 1. Add a new `TodoRepository` implementation utilising *MongoDB*.
@@ -273,6 +357,6 @@ To resolve this issue you will need to add a persistence mechanism that can be s
 
 ## Next Steps
 
-This lab has introduced you to some of the key concepts of *Docker Compose* and hopefully provided a working knowledge to build upon. As described initially, this tooling is excellent for Development, but not ideal for Production scenarios.
+This lab has introduced you to some of the key concepts of *Docker Compose* and the practical usages of it in the ASP.Net Core ecosystem, in addition to hopefully providing a working knowledge to build upon. As described initially, this tooling is excellent for Development, but not ideal for Production scenarios.
 
 In the next *Docker* lab we'll step it up a notch and take a look at *Docker Swarm*, introducing some more advanced orchestration scenarios.
