@@ -315,8 +315,8 @@ title De-synced Persistence
 Client->Proxy: POST /todos { Text: Test A }
 Proxy->API 1: POST /todos { Text: Test A }
 note over API 1: Stores Todo in-memory and assigns ID 123
-API 1->Proxy: 201 Created: Location { ID 123 }
-Proxy->Client: 201 Created: Location { ID 123 }
+API 1->Proxy: 201 Created { Location: /todos/123 }
+Proxy->Client: 201 Created { Location: /todos/123 }
 Client->Proxy: GET /todos/123
 Proxy->API 2: GET /todos/123
 note over API 2:ID 123 has not been created on this instance
