@@ -1,5 +1,4 @@
 # ASP.Net MVC
----
 
 This lab demonstrates the fundamental concepts of both MVC as a web technology stack, and also the UI Design Pattern the tech stack is named after.
 
@@ -9,9 +8,9 @@ In this lab you will create a simple API that allows the management of a *Todo L
 
 ### Notes
 
- * *Data*: All the data for the todo lists will be held in-memory, so any changes to data will be lost when the application restarts.
- * *Seed*: The lab will predefine a couple _Todo_ items in accordance with this guide. By getting your application running, you'll actually be able to tick things off your list!
- * *IDE*: This lab *can* be completed in Visual Studio, but for web development I recommend using VS Code. The reason being, web development moves very fast, much faster than some of us are used to. Visual Studio is a massive codebase and the VS Team simply can't keep up with changes to the web ecosystem. VS Code however is much more leightweight and nimble; whilst still not (typically) supporting bleeding edge development, it will always be more likely to cater for the web ecosystem as significant changes occur.
+* *Data*: All the data for the todo lists will be held in-memory, so any changes to data will be lost when the application restarts.
+* *Seed*: The lab will predefine a couple _Todo_ items in accordance with this guide. By getting your application running, you'll actually be able to tick things off your list!
+* *IDE*: This lab *can* be completed in Visual Studio, but for web development I recommend using VS Code. The reason being, web development moves very fast, much faster than some of us are used to. Visual Studio is a massive codebase and the VS Team simply can't keep up with changes to the web ecosystem. VS Code however is much more leightweight and nimble; whilst still not (typically) supporting bleeding edge development, it will always be more likely to cater for the web ecosystem as significant changes occur.
 
 ### VS Code Basics
 
@@ -25,8 +24,8 @@ In this example, you can either use the shortcut, or press `F1` and search for t
 
 For those accustomed to *Visual Studio*, please bear in mind the following points as they are often the cause of problems when following this lab:
 
- * *VS Code* does **not** save all your pending changes when you Build. Make sure you save your changes.
- * *VS Code* does not auto-restore NuGet packages when you change package references. Make sure you `dotnet restore` if you encounter NuGet problems.
+* *VS Code* does **not** save all your pending changes when you Build. Make sure you save your changes.
+* *VS Code* does not auto-restore NuGet packages when you change package references. Make sure you `dotnet restore` if you encounter NuGet problems.
 
 ## Part 1: Setup
 
@@ -34,15 +33,15 @@ In this part you will add a new project configured to run as an ASP.Net Core web
 
 There are many ways to create new projects, the most common for most people is to use `File` -> `New` in Visual Studio. However, seeing as I've recommended using VS Code...
 
- * Press `Ctrl + K, Ctrl + O` *(Files: Open Folder)* and navigate to or create the folder you want to work in for the duration of this lab.
- * Press `Ctrl + Shift + '` *(`Terminal: Create new integrated Terminal`)* to bring up the terminal.
-   * Ensure the terminal has opened the in the directory you want. If it hasn't navigate to it using `cd`.
- * In the terminal, type `mkdir src` to make a `src` directory, and then navigate to it in the terminal with `cd src`.
-   * At Gilmond we try to follow [best practice](https://gist.github.com/davidfowl/ed7564297c61fe9ab814) with regards to solution layout.
- * In the terminal, type `mkdir TodoApplication` to make a `TodoApplication` directory, and then navigate to it in the terminal with `cd TodoApplication`.
- * In the terminal, type `dotnet new web` to create a new Empty Web Project.
-   * The `dotnet new` command can create several templates by default, as [listed here](https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-new).
-   * The `dotnet new` command assumes the directory you're in to be the name of the application, so it will create a `TodoApplication.csproj` and namespace the other files accordingly.
+* Press `Ctrl + K, Ctrl + O` *(Files: Open Folder)* and navigate to or create the folder you want to work in for the duration of this lab.
+* Press `Ctrl + Shift + '` *(`Terminal: Create new integrated Terminal`)* to bring up the terminal.
+  * Ensure the terminal has opened the in the directory you want. If it hasn't, navigate to it using `cd`.
+* In the terminal, type `mkdir src` to make a `src` directory, and then navigate to it in the terminal with `cd src`.
+  * At Gilmond we try to follow [best practice](https://gist.github.com/davidfowl/ed7564297c61fe9ab814) with regards to solution layout.
+* In the terminal, type `mkdir TodoApplication` to make a `TodoApplication` directory, and then navigate to it in the terminal with `cd TodoApplication`.
+* In the terminal, type `dotnet new web` to create a new Empty Web Project.
+  * The `dotnet new` command can create several templates by default, as [listed here](https://docs.microsoft.com/en-us/dotnet/articles/core/tools/dotnet-new).
+  * The `dotnet new` command assumes the directory you're in to be the name of the application, so it will create a `TodoApplication.csproj` and namespace the other files accordingly.
 
 Your directory structure should now be:
 
@@ -86,25 +85,25 @@ Our first goal is to confirm that we can return a list of *Todo Items*. For now,
 
 ### Unit Testing
 
- * Rename the auto-generated `UnitTest1.cs` to `TodoControllerTests.cs`
- * Correct the `UnitTest1` class name.
- * Add the following test:
+* Rename the auto-generated `UnitTest1.cs` to `TodoControllerTests.cs`
+* Correct the `UnitTest1` class name.
+* Add the following test:
 
 ```csharp
 [Fact]
 public async Task GetAllReturnsAllTodos()
 {
-	var data = new[] { new Todo { Text = "Test Todo" } };
-	var mockRepo = new Mock<TodoRepository>();
-	mockRepo
-		.Setup(repo => repo.GetAllAsync())
-		.ReturnsAsync(data);
-	var controller = new TodoController(mockRepo.Object);
+  var data = new[] { new Todo { Text = "Test Todo" } };
+  var mockRepo = new Mock<TodoRepository>();
+  mockRepo
+    .Setup(repo => repo.GetAllAsync())
+    .ReturnsAsync(data);
+  var controller = new TodoController(mockRepo.Object);
 
-	var result = await controller.GetAll();
+  var result = await controller.GetAll();
 
-	var jsonResult = result.Should().BeOfType<JsonResult>().Subject;
-	jsonResult.Value.Should().Be(data);
+  var jsonResult = result.Should().BeOfType<JsonResult>().Subject;
+  jsonResult.Value.Should().Be(data);
 }
 ```
 
@@ -112,20 +111,20 @@ Clearly, most of this won't compile yet, but hopefully the intent is clear. We c
 
 A Test that won't compile is simply a *Failing Test*, so let's get our test to pass:
 
- * In the `TodoApplication` directory, add the file `Todo.cs` with the following content:
+* In the `TodoApplication` directory, add the file `Todo.cs` with the following content:
 
 ```csharp
 namespace TodoApplication
 {
-	public class Todo
-	{
-		public string Text { get; set; }
-		public bool IsComplete { get; set;}
-	}
+  public class Todo
+  {
+    public string Text { get; set; }
+    public bool IsComplete { get; set;}
+  }
 }
 ```
 
- * Add the `Moq` and `FluentAssertions` *NuGet package references* and then restore them using the following commands in the terminal, from the `TodoApplication.Tests` directory:
+* Add the `Moq` and `FluentAssertions` *NuGet package references* and then restore them using the following commands in the terminal, from the `TodoApplication.Tests` directory:
 
 ```cmd
 dotnet add package Moq
@@ -133,16 +132,16 @@ dotnet add package FluentAssertions
 dotnet restore
 ```
 
- * Add `using` statements to your `TodoControllerTests` file for `Moq` and `FluentAssertions`.
+* Add `using` statements to your `TodoControllerTests` file for `Moq` and `FluentAssertions`.
 
-With all our test dependencies in place, it's time to add our actual Controller code: 
+With all our test dependencies in place, it's time to add our actual Controller code:
 
- * Add a new class to the `TodoApplication` project called `TodoController.cs`.
- * Add a constructor to the class which accepts a `TodoRepository` argument.
- * Store the injected `TodoRepository` in a `private readonly` field.
- * Add a method called `GetAll` to your new controller class.
- * Fetch the data from your repository (using async/await).
- * Return the data within a `JsonResult`.
+* Add a new class to the `TodoApplication` project called `TodoController.cs`.
+* Add a constructor to the class which accepts a `TodoRepository` argument.
+* Store the injected `TodoRepository` in a `private readonly` field.
+* Add a method called `GetAll` to your new controller class.
+* Fetch the data from your repository (using async/await).
+* Return the data within a `JsonResult`.
 
 The controller should now look something like:
 
@@ -153,25 +152,25 @@ using System.Threading.Tasks;
 
 namespace TodoApplication
 {
-	public class TodoController
-	{
-		private readonly TodoRepository _repository;
+  public class TodoController
+  {
+    private readonly TodoRepository _repository;
 
-		public TodoController(TodoRepository repository)
-			=> _repository = repository;
+    public TodoController(TodoRepository repository)
+      => _repository = repository;
 
-		public async Task<IActionResult> GetAll()
-		{
-			var data = await _repository.GetAllAsync();
-			return new JsonResult(data);
-		}
-	}
+    public async Task<IActionResult> GetAll()
+    {
+      var data = await _repository.GetAllAsync();
+      return new JsonResult(data);
+    }
+  }
 }
 ```
 
 Again, this method doesn't compile because `IActionResult`, `TodoRepository`, and `JsonResult` are not defined. To resolve the `IActionResult` error:
 
- * As per previous instructions, add a *NuGet package reference* to `Microsoft.AspNetCore.Mvc.Core` from the `TodoApplication` directory and restore it.
+* As per previous instructions, add a *NuGet package reference* to `Microsoft.AspNetCore.Mvc.Core` from the `TodoApplication` directory and restore it.
 
 > _**Note**: [Security Advisory 4021279](https://github.com/aspnet/Announcements/issues/239) was recently announced. At time of writing, the tooling that created your web application does not use the secured version of `Microsoft.AspNetCore` when generating new projects from templates. If you're using version `1.1.1`, please update this to `1.1.2` by editing the `TodoApplication.csproj` file as shown below:_
 >
@@ -184,9 +183,9 @@ Again, this method doesn't compile because `IActionResult`, `TodoRepository`, an
 
 To resolve the `TodoRepository` error:
 
- * Add a `TodoRepository.cs` file to the `TodoApplication`.
- * Add the following content to the `TodoRepository` file:
-    * Note: We've added methods you don't require until later in this lab for simplicity.
+* Add a `TodoRepository.cs` file to the `TodoApplication`.
+* Add the following content to the `TodoRepository` file:
+  * Note: We've added methods you don't require until later in this lab for simplicity.
 
 ```csharp
 using System.Collections.Generic;
@@ -194,29 +193,29 @@ using System.Threading.Tasks;
 
 namespace TodoApplication
 {
-	public interface TodoRepository
-	{
-		/// <summary>
-		/// Return all <see cref="Todo"/>s, including those completed.
-		/// </summary>
-		/// <returns>Returns empty collection if none present</returns>
-		Task<ICollection<Todo>> GetAllAsync();
-		/// <summary>
-		/// Fetch the <see cref="Todo"/> matching the specified <paramref name="id"/>
-		/// </summary>
-		/// <returns>null if matching <see cref="Todo"/> not found.</returns>
-		Task<Todo> GetSingleAsync(int id);
-		/// <summary>
-		/// Adds the Todo
-		/// </summary>
-		/// <returns>ID of the created <see cref="Todo"/></returns>
-		Task<int> AddAsync(Todo todo);
-		/// <summary>
-		/// Replaces the <see cref="Todo"/> with a matching <paramref name="id">
-		/// </summary>
-		/// <returns>false if unable to update</returns>
-		Task<bool> UpdateAsync(int id, Todo todo);
-	}
+  public interface TodoRepository
+  {
+    /// <summary>
+    /// Return all <see cref="Todo"/>s, including those completed.
+    /// </summary>
+    /// <returns>Returns empty collection if none present</returns>
+    Task<ICollection<Todo>> GetAllAsync();
+    /// <summary>
+    /// Fetch the <see cref="Todo"/> matching the specified <paramref name="id"/>
+    /// </summary>
+    /// <returns>null if matching <see cref="Todo"/> not found.</returns>
+    Task<Todo> GetSingleAsync(int id);
+    /// <summary>
+    /// Adds the Todo
+    /// </summary>
+    /// <returns>ID of the created <see cref="Todo"/></returns>
+    Task<int> AddAsync(Todo todo);
+    /// <summary>
+    /// Replaces the <see cref="Todo"/> with a matching <paramref name="id">
+    /// </summary>
+    /// <returns>false if unable to update</returns>
+    Task<bool> UpdateAsync(int id, Todo todo);
+  }
 }
 ```
 
@@ -244,32 +243,32 @@ Unfortunately, this does not mean that our API is accessible yet. Indeed, if you
 
 Whilst we've confirmed that our code seems to work as intended, we can use an integration test to confirm that all of our components, when combined together with all of our dependencies such as Microsoft's MVC stack, work as intended:
 
- * Add a new test to your `TodoControllerTests` file:
+* Add a new test to your `TodoControllerTests` file:
 
 ```csharp
 private const string TodoJson = "[{\"text\":\"Add 'Complete Todo' API\",\"isComplete\":false},{\"text\":\"Add 'New Todo' API\",\"isComplete\":false},{\"text\":\"Correct Todo Controller Routing\",\"isComplete\":false},{\"text\":\"Integration Test Todo Controller\",\"isComplete\":false},{\"text\":\"Unit Test Todo Controller\",\"isComplete\":true},{\"text\":\"Setup Projects\",\"isComplete\":true}]";
 [Fact]
 public async Task GetAllRequestReturnsAllTodosInJson()
 {
-	var server = new TestServer(new WebHostBuilder()
-		.UseStartup<Startup>());
-	var client = server.CreateClient();
+  var server = new TestServer(new WebHostBuilder()
+    .UseStartup<Startup>());
+  var client = server.CreateClient();
 
-	var response = await client.GetAsync("/todo/getall");
+  var response = await client.GetAsync("/todo/getall");
 
-	response.StatusCode.Should().Be(HttpStatusCode.OK);
-	var content = await response.Content.ReadAsStringAsync();
-	content.Should().Be(TodoJson);
+  response.StatusCode.Should().Be(HttpStatusCode.OK);
+  var content = await response.Content.ReadAsStringAsync();
+  content.Should().Be(TodoJson);
 }
 ```
 
 Again, this test won't compile immediately so let's resolve that.
 
- * Add a using for `Microsoft.AspNetCore.Hosting`.
- * Add a NuGet package reference to `Microsoft.AspNetCore.TestHost`.
- * Restore your NuGet packages.
- * Add a using for `Microsoft.AspNetCore.TestHost`.
- * Add a using for `System.Net`.
+* Add a using for `Microsoft.AspNetCore.Hosting`.
+* Add a NuGet package reference to `Microsoft.AspNetCore.TestHost`.
+* Restore your NuGet packages.
+* Add a using for `Microsoft.AspNetCore.TestHost`.
+* Add a using for `System.Net`.
 
 With our test now compiling we can start resolving any errors that occur when running the test. If you examine the output of `dotnet test`, you'll see that the first problem is:
 
@@ -279,12 +278,12 @@ This output is saying that when we tried to make a `GET` request to `/todo/getal
 
 To enable our controllers to work, we'll first need to enable MVC on our website:
 
- * Add MVC to the `IServiceCollection` in `Startup.cs`:
+* Add MVC to the `IServiceCollection` in `Startup.cs`:
 
 ```csharp
 public void ConfigureServices(IServiceCollection services)
 {
-	services.AddMvcCore();
+  services.AddMvcCore();
 }
 ```
 
@@ -292,17 +291,17 @@ public void ConfigureServices(IServiceCollection services)
 
 > _**Note**: Once ASP.Net Core 2.0 is released (at time of writing is in `preview1-final`), this granular dependency management will no longer be necessary. Instead, you'll simply add a single package reference to `Microsoft.AspNetCore.All` which will add **all** nuget packages to your project. When you publish your application, any dependencies you don't need will simply be excluded from the publish output._
 
-  * Replace the *"Hello World"* Middleware with the MVC Middleware in `Startup.cs`, enabling the default route:
+* Replace the *"Hello World"* Middleware with the MVC Middleware in `Startup.cs`, enabling the default route:
 
 ```csharp
 public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
 {
-	loggerFactory.AddConsole();
+  loggerFactory.AddConsole();
 
-	if (env.IsDevelopment())
-		app.UseDeveloperExceptionPage();
+  if (env.IsDevelopment())
+    app.UseDeveloperExceptionPage();
 
-	app.UseMvcWithDefaultRoute();
+  app.UseMvcWithDefaultRoute();
 }
 ```
 
@@ -322,62 +321,62 @@ using System.Threading.Tasks;
 
 namespace TodoApplication
 {
-	internal sealed class InMemoryTodoRepository : TodoRepository
-	{
-		private readonly ConcurrentDictionary<int, Todo> _todos;
+  internal sealed class InMemoryTodoRepository : TodoRepository
+  {
+    private readonly ConcurrentDictionary<int, Todo> _todos;
 
-		private static readonly IEnumerable<Todo> Seed = new[] {
-			new Todo { Text = "Setup Projects", IsComplete = true },
-			new Todo { Text = "Unit Test Todo Controller", IsComplete = true},
-			new Todo { Text = "Integration Test Todo Controller"},
-			new Todo { Text = "Correct Todo Controller Routing"},
-			new Todo { Text = "Add 'Get Single' API"},
-			new Todo { Text = "Add 'New Todo' API" },
-			new Todo { Text = "Add 'Complete Todo' API" }
-		};
-		private int _nextId;
+    private static readonly IEnumerable<Todo> Seed = new[] {
+      new Todo { Text = "Setup Projects", IsComplete = true },
+      new Todo { Text = "Unit Test Todo Controller", IsComplete = true},
+      new Todo { Text = "Integration Test Todo Controller"},
+      new Todo { Text = "Correct Todo Controller Routing"},
+      new Todo { Text = "Add 'Get Single' API"},
+      new Todo { Text = "Add 'New Todo' API" },
+      new Todo { Text = "Add 'Complete Todo' API" }
+    };
+    private int _nextId;
 
-		public InMemoryTodoRepository()
-			=> _todos = new ConcurrentDictionary<int, Todo>(Seed
-				.ToDictionary(x => Interlocked.Increment(ref _nextId), x => x));
+    public InMemoryTodoRepository()
+      => _todos = new ConcurrentDictionary<int, Todo>(Seed
+        .ToDictionary(x => Interlocked.Increment(ref _nextId), x => x));
 
-		public Task<ICollection<Todo>> GetAllAsync()
-			=> Task.FromResult(_todos.Values);
+    public Task<ICollection<Todo>> GetAllAsync()
+      => Task.FromResult(_todos.Values);
 
-		public Task<Todo> GetSingleAsync(int id)
-		{
-			if (_todos.TryGetValue(id, out var todo))
-				return Task.FromResult(todo);
-			return Task.FromResult<Todo>(null);
-		} 
+    public Task<Todo> GetSingleAsync(int id)
+    {
+      if (_todos.TryGetValue(id, out var todo))
+        return Task.FromResult(todo);
+      return Task.FromResult<Todo>(null);
+    }
 
-		public Task<int> AddAsync(Todo todo)
-		{
-			var id = Interlocked.Increment(ref _nextId);
-			if (_todos.TryAdd(id, todo))
-				return Task.FromResult(id);
-			throw new NotImplementedException("Erm... that's weird.");
-		}
+    public Task<int> AddAsync(Todo todo)
+    {
+      var id = Interlocked.Increment(ref _nextId);
+      if (_todos.TryAdd(id, todo))
+        return Task.FromResult(id);
+      throw new NotImplementedException("Erm... that's weird.");
+    }
 
-		public Task<bool> UpdateAsync(int id, Todo todo)
-		{
-			if (_todos.TryGetValue(id, out var original))
-				return Task.FromResult(_todos.TryUpdate(id, original, todo));
-			return Task.FromResult(false);
-		}
-	}
+    public Task<bool> UpdateAsync(int id, Todo todo)
+    {
+      if (_todos.TryGetValue(id, out var original))
+        return Task.FromResult(_todos.TryUpdate(id, original, todo));
+      return Task.FromResult(false);
+    }
+  }
 }
 ```
 
- * In `Startup.cs`, bind our in-memory implementation as a Singleton, in the `ConfigureServices` method:
+* In `Startup.cs`, bind our in-memory implementation as a Singleton, in the `ConfigureServices` method:
 
- ```
+```csharp
 public void ConfigureServices(IServiceCollection services)
 {
-	services.AddMvcCore();
-	services.AddSingleton<TodoRepository, InMemoryTodoRepository>();
+  services.AddMvcCore();
+  services.AddSingleton<TodoRepository, InMemoryTodoRepository>();
 }
- ```
+```
 
 This should resolve our the second test error. Examing the output of `dotnet test` again, we can see:
 
@@ -385,16 +384,16 @@ This should resolve our the second test error. Examing the output of `dotnet tes
 
 Whilst we did add a NuGet package reference to `Microsoft.AspNetCore.Mvc.Formatters.Json` earlier in this lab to get access to the `JsonResult` class, we never added it to the services. Do that now by editing the `ConfigureServices` method again:
 
- ```
+```csharp
 public void ConfigureServices(IServiceCollection services)
 {
-	services.AddMvcCore()
-		.AddJsonFormatters();
-	services.AddSingleton<TodoRepository, InMemoryTodoRepository>();
+  services.AddMvcCore()
+    .AddJsonFormatters();
+  services.AddSingleton<TodoRepository, InMemoryTodoRepository>();
 }
- ```
+```
 
-You should now have two passing tests. Hit `F5` *(`Debug: Start Debugging`)*  and navigate to `http://localhost:5000/todo/getall` in your browser. You should see your data returned having been _JSON serialized_. 
+You should now have two passing tests. Hit `F5` *(`Debug: Start Debugging`)*  and navigate to `http://localhost:5000/todo/getall` in your browser. You should see your data returned having been _JSON serialized_.
 
 Congratulations, you just made an *ASP.Net Core API*!
 
@@ -419,16 +418,16 @@ Congratulations, you just made an *ASP.Net Core API*!
 >
 >When we added the MVC middleware earlier, we specified we wanted to use the *Default Route*. This route is typically expressed as:
 >
->```
+>```csharp
 >url: "{controller}/{action}/{id}",
->defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional 
+>defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
 >```
 >
->After discovering your controllers, MVC will automatically map the controller's name (excluding the word `Controller` itself) to the `{controller}` section of the above route. Similarly, it will map the names of your methods within that controller to the `{action}` section of that route. 
+>After discovering your controllers, MVC will automatically map the controller's name (excluding the word `Controller` itself) to the `{controller}` section of the above route. Similarly, it will map the names of your methods within that controller to the `{action}` section of that route.
 >
 >The second line shown above specifies that if a request is made that does not include the `{action}` section, then the assumption is made that it wants the method called `Index`. Similarly, if no `{controller}` section is present in the URL, then MVC will look for a controller called `Home` (consider this to be like *optional parameters*).
 >
->Therefore, if you create a controller called `HomeController` with a method called `Index`, this method would be called whenever somebody goes to your root URL (i.e. http://localhost:5000).
+>Therefore, if you create a controller called `HomeController` with a method called `Index`, this method would be called whenever somebody goes to your root URL (i.e. [http://localhost:5000](http://localhost:5000)).
 >
 >In the next section we'll see how we can modify the default route to better implement a [REST API](https://en.wikipedia.org/wiki/Representational_state_transfer).
 
@@ -436,8 +435,8 @@ Congratulations, you just made an *ASP.Net Core API*!
 
 _Routing_ is the term used to describe the process of working out what code should run given a Web Request. There are typically key components to a web request which help as determine how it should be routed:
 
- * [HTTP Verb](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Request_methods)
- * URL
+* [HTTP Verb](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Request_methods)
+* URL
 
 > _**Note**: It's also common to route and constrain routes according to Query Parameters and Content Body, but we won't be covering those techniques in this lab._
 
@@ -445,44 +444,44 @@ There are two ways of describing routes. The first is *Conventional* routing whi
 
 Whilst we could suffice with little more than the default route we added earlier, REST API's should try to follow this routing convention:
 
- * `GET /todos` - Retrieves a list of todos
- * `GET /todos/12` - Retrieve a specific todo
- * `POST /todos` - Create a todo
- * `PUT /todos/12` - Update a specific todo
- * `PATCH /todos/12` - Partially update a specific todo
- * `DELETE /todos/12` - Delete a specific todo
+* `GET /todos` - Retrieves a list of todos
+* `GET /todos/12` - Retrieve a specific todo
+* `POST /todos` - Create a todo
+* `PUT /todos/12` - Update a specific todo
+* `PATCH /todos/12` - Partially update a specific todo
+* `DELETE /todos/12` - Delete a specific todo
 
 As we saw earlier, to access a list of todos currently, we used `GET /todo/getall`. Whilst the controller and action names we used are correct from a C# standpoint, the default route clearly isn't going to work for a REST API. Let's rectify this:
 
- * In `TodoControllerTests`, change our integration test to use the RESTful route:
+* In `TodoControllerTests`, change our integration test to use the RESTful route:
 
 ```csharp
 var response = await client.GetAsync("/todos");
 ```
 
- * In `Startup`, remove the default route:
+* In `Startup`, remove the default route:
 
  ```csharp
 public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
 {
-	loggerFactory.AddConsole();
+  loggerFactory.AddConsole();
 
-	if (env.IsDevelopment())
-		app.UseDeveloperExceptionPage();
+  if (env.IsDevelopment())
+    app.UseDeveloperExceptionPage();
 
-	app.UseMvc();
+  app.UseMvc();
 }
  ```
 
-  * Add a `RouteAttribute` to the `TodoController` to apply to all actions:
+* Add a `RouteAttribute` to the `TodoController` to apply to all actions:
 
   ```csharp
 [Route("todos")]
 public class TodoController
 {
-	// ...
+  // ...
 }
-  ```
+```
 
   > _**Note**: The restful URLs should use the pluralized version of the resource, whilst code will follow typical plural/singular rules for naming. Thus, in the example above, our singular `TodoController` is routed from our plural `/todos`._
 
@@ -492,7 +491,7 @@ public class TodoController
 [HttpGet("")]
 public async Task<IActionResult> GetAll()
 {
-	// ...
+  // ...
 }
   ```
 
@@ -511,7 +510,7 @@ To complete this lab, I leave it to you to implement the following features (the
     * Hints: `HttpPostAttribute` & `CreatedResult`
     * Note: Whilst implementing this myself, I [raised a bug](https://github.com/aspnet/Mvc/issues/6284) which may determine the method you use.
  1. Add an integration test for your new `Create` method.
-    * Hint: 
+    * Hint:
 	
     ```csharp
     var postContent = new StringContent("{\"text\":\"Add 'Complete Todo' API\",\"isComplete\":true}");
