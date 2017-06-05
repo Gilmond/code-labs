@@ -531,4 +531,4 @@ You've got the bare minimum set up here for a reactive application. If you want 
 1. Add a GET for all the TODOs, such that when you refresh your browser the todos are pulled programmatically from the server.
 2. Add boostrap or another style framework and begin styling your components (for bonus points: think about how each component is reusable and bring in **only** the styles necessary for it)
 3. Add client side routing, such as react router!
-4. Add a reducer for complex view logic
+4. Add a [selector](https://github.com/reactjs/reselect) for complex view logic
