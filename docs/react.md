@@ -19,8 +19,6 @@ In this lab you will create a simple web interface that will consume the API you
 
 *React* is one of the many javascript libraries that assist in building user interfaces. It is a lightweight library that we use alongside other libraries (such as [Redux](http://redux.js.org/)). Developers unaccustomed to web development can find it difficult at first getting used to the various languages and tooling associated.
 
-<diag
-
 ## Part 1: Setup
 
 Create a new working directory and run `yarn init` there. Follow the instructions through (most aren't super relevant and can be skipped), it should be similar to the following.
@@ -432,7 +430,7 @@ render(
 
 > You should have one last error about `'./reducers'`
 
-## Part 3: Reducers
+## Part 4: Reducers
 
 Reducers are awesome. Essentially you take a slice of the store you care about and, given an action, return a new store. The key here is that you never modify the original store and you never have any side effects. Reducers should only be pure and return a new store. If you follow this advice you get an application where you can replay/fast forward through different states... Awesome!
 
@@ -539,7 +537,7 @@ app.UseCors(builder =>
 
 to the appropriate places. CORS is an important security consideration, you can read more [here](https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 
-## Part 4: ...what next?
+## Part 5: ...what next?
 
 You've got the bare minimum set up here for a reactive application. If you want to learn more try one (or more) of the following challenges:
 
