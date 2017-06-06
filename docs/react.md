@@ -1,11 +1,25 @@
 # React
----
 
-This lab demonstrates the fundamental concepts of react and friends.
+![react logo](../images/react-logo.png)![redux logo](../images/react-redux-logo.png)
+
+This lab demonstrates the fundamental concepts of the javascript library [React](https://facebook.github.io/react/).
 
 ## Overview
 
-In this lab you will create a simple web interface that will consume the api you created in previous labs.
+In this lab you will create a simple web interface that will consume the API you created in previous labs.
+
+## Notes
+
+* You must have at least completed the [ASP.Net MVC Lab](https://github.com/Gilmond/code-labs/blob/master/docs/asp-net-mvc.md) in order to undertake this lab.
+* In addition to VS Code used in previous labs, please ensure you have installed
+  * [NPM 3.10.* via Node 6.10.* (LTS 64 bit)](https://nodejs.org/en/download/)
+  * [Yarn 0.24.*](https://yarnpkg.com/en/docs/install)
+
+## Introduction
+
+*React* is one of the many javascript libraries that assist in building user interfaces. It is a lightweight library that we use alongside other libraries (such as [Redux](http://redux.js.org/)). Developers unaccustomed to web development can find it difficult at first getting used to the various languages and tooling associated.
+
+<diag
 
 ## Part 1: Setup
 
@@ -388,9 +402,10 @@ export const toggleTodo = (id) =>
 ```
 
 See how these are delegates with a single common property, `type`. In Redux, this type field is used to determine what logic to run. Essentially:
+
 1. The component with call these actions with some data
-2. The action creators will generate an object with the required property, `type` and the rest of the properties.
-3. Redux will route this action to the correct **reducer** (coming up soon)
+1. The action creators will generate an object with the required property, `type` and the rest of the properties.
+1. Redux will route this action to the correct **reducer** (coming up soon)
 
 We're going to need some additional middleware to allow redux to work with async actions. `yarn add redux-thunk` will install the correct package for the job.
 
