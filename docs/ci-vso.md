@@ -112,7 +112,6 @@ Your build _should_ still be successful. Not for long though... now we're going 
 * Set the arguments field to `--configuration $(BuildConfiguration) --logger:trx`
 * Click 'Add Task'
 * Select the Publish Test Results task and click 'Add'
-* Hit 'Save & queue'
 * In the Test result format dropdown select `VSTest`
 * Set the Test results files field to `**\*.trx`
 * Expand the Control Options section 
