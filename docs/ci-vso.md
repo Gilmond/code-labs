@@ -178,7 +178,7 @@ You can rename each step to be more descriptive:
 * dotnet restore to `Restore NuGet packages`
 * dotnet build to `Build Projects`
 * dotnet test to `Run Tests`
-* Publish Test Results **\*.trx to `Publish Test Results`
+* Publish Test Results **\\*.trx to `Publish Test Results`
 * 1st dotnet publish to `Create Website Artifacts`
 * 2nd dotnet publish to `Create CLI Artifacts`
 * Publish Artifact: drop to `Publish Artifacts`
