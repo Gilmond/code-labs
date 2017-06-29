@@ -18,15 +18,15 @@ Make sure that you select 'Git' under 'Version control'
 
 ## Pull example solution from Github
 
-Download the code-labs source from Github as a ZIP from the following URL:
+Once your new repo is created you can clone the contents directly from Github.
 
-[https://github.com/Gilmond/code-labs/archive/master.zip](https://github.com/Gilmond/code-labs/archive/master.zip)
+![Setup repo options](../images/vso-setup-repo.png)
 
-From inside the ZIP file pull out the folder called 'ci-vso'. This is the sample code we'll use in our build and testing scenarios.
+Expand the 'or import a repository' section and click 'Import'
 
-## Push example solution into VSO
+![Import from Git repo](../images/vso-import-git-repo.png)
 
-From your newly created VSO team project clone the git repository and copy in the _contents_ of the 'ci-vso' folder from the ZIP file.
+When prompted enter a clone URL of `https://github.com/Gilmond/ci-vso.git` - hit 'Import' and VSO will pull the source from Github.
 
 You should then have the following in the root of your local repository:
 
