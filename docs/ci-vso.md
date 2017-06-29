@@ -28,11 +28,9 @@ Expand the 'or import a repository' section and click 'Import'
 
 When prompted enter a clone URL of `https://github.com/Gilmond/ci-vso.git` - hit 'Import' and VSO will pull the source from Github.
 
-You should then have the following in the root of your local repository:
+You can then check the contents of your repo through the web UI. You should set you have the following:
 
 ![New repository file](../images/vso-new-repository.png)
-
-Stage the changes and push them to your remote VSO repository. You should now be able to see the example solution in your VSO repository via the web interface.
 
 ### Example solution structure
 
