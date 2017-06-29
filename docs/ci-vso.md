@@ -73,7 +73,7 @@ Your build will be queued up:
 
 ![Queued build](../images/vso-queued-build.png)
 
-Hopefully - in about 30 seconds (depending on queueing time) - you'll get a successful build. Click through to instance of the build and you'll be able to inspect the steps that were executed and their outputs.
+Hopefully - in about 30 seconds (depending on queueing time) - you'll get a successful build. Click through to the instance of the build and you'll be able to inspect the steps that were executed and their outputs.
 
 All we've done so far is restore our NuGet packages - we still need to:
 
@@ -98,7 +98,7 @@ Edit your build definition and do the following:
 * Set the projects field to `**\*.csproj`
 * Set the arguments field to `--configuration $(BuildConfiguration)`
     * The `$(BuildConfiguration)` part will be expanded by the build process with the value in the variable we just defined.
-* Hit 'Save & queue', notice in the popup there's no an entry for the variable we defined:
+* Hit 'Save & queue', notice in the popup there's now an entry for the variable we defined:
 
 ![Build variables](../images/vso-build-variables.png)
 
@@ -168,6 +168,22 @@ Edit your build definition again:
 * Hit 'Save & Queue'
 
 Once this build completes you'll have a new top level tab in your build report 'Artifacts'. You can either download a `drop.zip` file that will contain your build output or view it's contents in the webapp - either way you should see it contains two zip files : `ci-vso-web.zip` and `ci-vso.zip` which are the output of our two 'end-point' projects.
+
+Your final build definition should look like:
+
+![Final build process](../images/vso-final-build-process.png)
+
+You can rename each step to be more descriptive:
+
+* dotnet restore to `Restore NuGet packages`
+* dotnet build to `Build Projects`
+* dotnet test to `Run Tests`
+* Publish Test Results **\*.trx to `Publish Test Results`
+* 1st dotnet publish to `Create Website Artifacts`
+* 2nd dotnet publish to `Create CLI Artifacts`
+* Publish Artifact: drop to `Publish Artifacts`
+
+![Renamed build process](../images/vso-renamed-build-process.png)
 
 ### Code Coverage
 
