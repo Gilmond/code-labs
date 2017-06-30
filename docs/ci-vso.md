@@ -28,7 +28,7 @@ Expand the 'or import a repository' section and click 'Import'
 
 When prompted enter a clone URL of `https://github.com/Gilmond/ci-vso.git` - hit 'Import' and VSO will pull the source from Github.
 
-You can then check the contents of your repo through the web UI. You should set you have the following:
+You can then check the contents of your repo through the web UI. You should have the following:
 
 ![New repository file](../images/vso-new-repository.png)
 
@@ -47,7 +47,7 @@ What does it do? Not much - but just enough to prove the point - a FizzBuzz impl
 
 We're going to build up our build definition piece by piece - running the build at each step to verify what it's doing / how.
 
-The aim of this definition is to compile all the example code and run all the tests within it. We're trying to achieve this as quickly as possible to reduce our round-trip times.
+The aim of this definition is to compile all the example code and run all the tests within it. We're trying to achieve this as quickly as possible to reduce our mental round-trip times (the gap between believing you're finished with a task, and hence your brain "unshelving" the details and finding out there's a problem and having to bring all that detail back to the fore - the shorter the _better_).
 
 From the top nav bar click on 'Build & Release'
 
@@ -185,6 +185,16 @@ You can rename each step to be more descriptive:
 ### Code Coverage
 
 Alas this isn't currently supported for .NET Core - it's coming, just not yet. 
+
+# Bonus Steps
+
+If you've got to the end of this before we run out of time, or you just want to take things a little further - here's some additional things you can try adding to your build.
+
+* Define a build number schema - at the moment your builds are numbered sequentially, so the first one is `1`, second `2` and so on. It's possible to define build numbers based on a variety of factors including todays date.
+* Setup a CD (Continuous Deployment) pipeline. Create an Azure website and add steps to the build so that your website is automatically published on _every_ build.
+    * You might want to clone your build definition to create a manually triggered `Master-Deployment` build. You don't _always_ want every checkin to be deployed.
+    * There's an `Azure App Service Deploy` task that will help with that.
+* Get your source from the React lab into a VSO repository and use an `npm` task to build your app
 
 # _**Don't read this if you don't want to know what the test break was**_
 
