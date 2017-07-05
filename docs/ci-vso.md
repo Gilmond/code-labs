@@ -104,12 +104,17 @@ Edit your build definition and do the following:
 
 Your build _should_ still be successful. Not for long though... now we're going to enable running of our tests and publishing the results into VSO, so re-edit your definition:
 
+*Run unit tests*
+
 * Select the 'Tasks' tab
 * Click 'Add Task'
 * Select the .NET Core task and click 'Add'
 * Change the command to `test`
 * Set the projects field to `tests\**\*.csproj`
 * Set the arguments field to `--configuration $(BuildConfiguration) --logger:trx`
+
+*Publish results*
+
 * Click 'Add Task'
 * Select the Publish Test Results task and click 'Add'
 * In the Test result format dropdown select `VSTest`
@@ -147,17 +152,26 @@ So long as you've found the _cough_ deliberate mistake you should see a verdant 
 
 Edit your build definition again:
 
+*Publish website*
+
 * Select the 'Tasks' tab
 * Click 'Add Task'
 * Select the .NET Core task and click 'Add'
 * Change the command to `publish`
 * Set the arguments field to `--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)`
+
+*Publish CLI tool*
+
 * Click 'Add Task' again
 * Select the .NET Core task and click 'Add'
 * Change the command to `publish`
 * Set the arguments field to `--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory)`
 * Uncheck the 'Publish Web Projects' checkbox
 * Set the Projects field to `src\ci-vso\*.csproj`
+
+*Put published components into artifacts of the build*
+
+* Click 'Add Task' again
 * Select the Publish Artifact task and click 'Add'
 * Set the Path to Publish field as `$(build.artifactstagingdirectory)`
 * Set the Artifact Name to `drop`
