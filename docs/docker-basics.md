@@ -137,29 +137,32 @@ Search for `microsoft/aspnetcore` in the [docker hub](https://hub.docker.com/r/m
 
 ![micrsoft-aspnetcore](../images/micrsoft-aspnetcore.png)
 
-> _**Note**: In the image above, there are multiple *tags* for several of the images. The image at the top is tagged with `'1.0.5'`, `'1.0'`, and `'lts'` (which stands for 'long-term stability'). It is important to note that **tags are not permanent**. If Microsoft were to release a `1.0.6` version of the image, they would move the `1.0` and possibly the `lts` tag to the new image. This is considered a best practice for docker images, and allows consumers to determine for themselves which release branch(es) they want to build on top of._
->
->_For a production release of your own docker image, you'd likely want to use the most granular tag (`'1.0.5'`) because that tag should never move, which guarantees stability for your deployments. If you trust the repository owner to maintain [semver](http://semver.org/) with their tags, you might also choose to use the `'1.0'` tag which should allow you to receive reverse compatible, non-breaking updates if they are published._
->
->_As with any dependency on any third party software, it is your responsibility to keep an eye on your dependencies for critical security flaws, and update your software accordingly._
+As you can see, there's quite a lot going on in the above screenshot. The first thing to note is that support for Linux and Windows images does not denote which Operating System (OS) the images can be used on. If you're using *Docker for Windows*, as shown earlier, you can right click the Docker icon in the task tray and switch between Windows and Linux images. The mode your docker is running in determines which of the above images docker will use. Because we switched to Linux mode earlier, we'll be using Linux images.
 
-We want to use the current `latest` tag (which should be the latest stable release), but we'll refer to the `1.1.2` tag for stability. In the above example, we can see there are actually two images using the `1.1.2` prefix. This usually indicates a difference in base image; remember we are running Linux containers so we want to find the Linux image (not Windows).
+There are also multiple *tags* for several of the docker images. The docker images at the top (of both Windows and Linux supported categories) are tagged with `'1.0.7'`, `'1.0'`, and `'lts'` (which stands for 'long-term stability'). It is important to note that **tags are not permanent**. Microsoft may decide to promote `1.1.4` or `2.0.0` versions of the images, which would move the `lts` tag to the new image. This is considered a best practice for docker images, and allows consumers to determine for themselves which release branch(es) they want to build on top of.
 
-Let's click on the first 1.1.2 [(DockerFile) link](https://github.com/aspnet/aspnet-docker/blob/master/1.1/nanoserver/runtime/Dockerfile) ![1.1.2](../images/1.1.2-top.PNG) to see how the image was made.
+For a production release, you'd likely want to rely upon the most granular tag (`'1.0.7'`) because that tag should never move, which guarantees stability for your deployments. If you trust the repository owner to maintain [semver](http://semver.org/) with their tags, you might also choose to use the `'1.0'` tag which should allow you to receive reverse compatible, non-breaking updates if they are published (when the tag is moved to `1.0.8` for example).
 
-![nanoserver-baselayer](../images/windows-dockerfile.png)
+These conventions are common across a majority of docker repositories, and are important to understand so that your application depends on the correct branch. As with any dependency on any third party software, it is your responsibility to keep an eye on your dependencies for critical security flaws, and update your software accordingly.
 
-At the top of the Dockerfile you have the `FROM` directive which sets the base image. The `aspnetcore` image is built on top of the `microsoft/dotnet:1.1.2-runtime` image. 
+We want to use the current `latest` tag (which should be the latest stable release), but we'll refer to the `2.0.0` tag for stability. In the above example, we can see there are actually two images using the `1.1.2` prefix. This usually indicates a difference in base image; remember we are running Linux containers so we want to find the Linux image (not Windows).
 
-Search for `microsoft/dotnet` in the [docker hub](https://hub.docker.com/r/microsoft/dotnet/) and find the corresponding `1.1.2-runtime` tag in the list.
+Let's click on the Linux 2.0.0 *Stretch* [(DockerFile) link](https://github.com/aspnet/aspnet-docker/blob/master/2.0/stretch/runtime/Dockerfile) to see how the image was made.
+![2.0.0 dockerfile link](../images/docker-basics-stretch-dockerfile.png)
 
-![debian](../images/debian.png)
+![2.0.0 stretch baselayer](../images/docker-basics-stretch-dockerfile-content.png)
 
-Here we can see that the `1.1.2-runtime` is layered on top of `Debian`, and Debian is a Linux distribution. BINGO!!!
+At the top of the Dockerfile you have the `FROM` directive which sets the base image. The `aspnetcore` image is built on top of the `microsoft/dotnet:2.0.0-runtime-stretch` image. 
 
-So `microsoft/aspnetcore:1.1.2` is the Linux image we want to use for our base image.
+Search for `microsoft/dotnet` in the [docker hub](https://hub.docker.com/r/microsoft/dotnet/) and find the corresponding `2.0.0-runtime-stretch` tag in the list.
 
->_**Note**: Windows images are typically identified with tags relating to the base `nanoserver` or `windowsservercore` Windows images. Docker images primarily use linux, so if nothing is specified, linux is likely the base image used._
+![debian](../images/docker-basics-dotnet-stretch.png)
+
+Again, clicking the associated [(Dockerfile) Link](https://github.com/dotnet/dotnet-docker/blob/master/2.0/runtime/stretch/amd64/Dockerfile) and checking the `FROM` directive, you'll see the next image in the chain is `microsoft/dotnet:2.0-runtime-deps`, and following that Dockerfile you'll see the `FROM` directive is `debian:stretch` (which in turn comes from `scratch`).
+
+As you can see, images often represent a stack of other images.
+
+>_**Note**: Windows images are typically identified with tags relating to the base `nanoserver`. Docker images primarily use linux, so if nothing is specified, linux is likely the base image used._
 
 ### Docker File
 
@@ -172,24 +175,59 @@ For example, you would configure the operating system, install the software you 
 
 In your MVC lab folder, navigate to `src\TodoApplication` and create a file called `Dockerfile` (no file extension).
 
-We start with the name of an existing image that has already been built, which in our case will be the `aspnetcore` image we found in the last section, and we know that the `1.1.2` tag will give us a linux container. Edit the Dockerfile and write the following:
+What we're aiming for is two-fold. The first step is to build our application, the second is to host it. Ideally, we don't want to put all the heavy dependencies required to build .Net Core applications into our final output image, which fortunately Docker fully supports.
 
-The `FROM` directive sets the Base Image for subsequent instructions.
+We'll start by specifying a build environment for our application using the `FROM` directive to set the Base Image for subsequent instructions.
 
 ```docker
-FROM microsoft/aspnetcore:1.1.2
+FROM microsoft/aspnetcore-build:2.0 AS build-environment
 ```
 
-The `WORKDIR` directive sets the working directory. If the WORKDIR doesn’t exist, it will be created.
+The `WORKDIR` directive sets the working directory. If this `WORKDIR` doesn’t exist, it will be created.
 
 ```docker
 WORKDIR /app
 ```
 
-The `COPY` directive specifies the files we want to copy inside the image.
+The `COPY` directive specifies the files we want to copy from our host machine, into the image. First we'll copy over the `csproj`:
 
 ```docker
-COPY bin/Debug/netcoreapp1.1/publish/ .
+COPY *.csproj ./
+```
+
+Then we'll have the image perform a `dotnet restore`:
+
+```docker
+RUN dotnet restore
+```
+
+With the project dependencies in place, copy over everything else and run `dotnet publish`:
+
+```docker
+COPY . ./
+RUN dotnet publish -c Release -o out
+```
+
+> _**Note**: The `. ./` notation shown denotes that everything from the same directory as this `Dockerfile` on the host machine should be copied into the target directory inside the image (which is `/app` because `WORKDIR` was set)._
+
+With the application built and published, we now want to create the second image using the output of the first.
+
+First, set the base image to the `stretch` tag we found earlier:
+
+```docker
+FROM microsoft/aspnetcore:2.0-stretch
+```
+
+Again, we'll set a working directory:
+
+```docker
+WORKDIR /app
+```
+
+This time, we'll copy the output from the first image into our working directory:
+
+```docker
+COPY --from=build-environment /app/out
 ```
 
 An `ENTRYPOINT` allows you to configure a container to run an executable when it starts. We want to run the `dotnet TodoApplication.dll` command in the container.
@@ -198,20 +236,20 @@ An `ENTRYPOINT` allows you to configure a container to run an executable when it
 ENTRYPOINT ["dotnet", "TodoApplication.dll"]
 ```
 
-The `EXPOSE` directive informs Docker that the container utilises the specified network port(s). `EXPOSE` does not make the ports of the container accessible to the host. To do that, you must use either the `-p` (lowercase) flag to bind ports, or the `-P` (uppercase) flag to bind all the exposed ports to available host ports.
-
-```docker
-EXPOSE 80
-```
-
 Your Dockerfile should now look like this:
 
 ```docker
-FROM microsoft/aspnetcore:1.1.2
+FROM microsoft/aspnetcore-build:2.0 AS build-env
 WORKDIR /app
-COPY bin/Debug/netcoreapp1.1/publish/ .
+COPY *.csproj ./
+RUN dotnet restore
+COPY . ./
+RUN dotnet publish -c Release -o out
+
+FROM microsoft/aspnetcore:2.0
+WORKDIR /app
+COPY --from=build-env /app/out .
 ENTRYPOINT ["dotnet", "TodoApplication.dll"]
-EXPOSE 80
 ```
 
 ### Docker Build
@@ -221,10 +259,7 @@ Run the following command to build and name your image:
 ```cmd
 docker image build -t <name> <location of DockerFile>`
 ```
-
-> _**Troubleshooting**: If the build fails at Step 3 because it cannot find the `netcoreapp1.1/publish` directory, run `dotnet publish` from the `TodoApplication` directory to output the publish content that docker is expecting, and then re-run the `docker build` command._
-
-The first time you do this it will download all the layers that make up that `aspnetcore` image. It will then carry out each step within the Dockerfile, e.g. Copy files.
+The first time you do this it will download all the layers that make up that `aspnetcore-build` and `aspnetcore` images. It will then carry out each step within the Dockerfile, e.g. Copy files.
 
 You can now `run` this image. Don't forget to use the `-p` parameter to bind the ports.
 
